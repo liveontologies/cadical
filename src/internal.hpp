@@ -986,11 +986,17 @@ struct Internal {
 
   double solve_time ();         // accumulated time spent in 'solve ()'
 
+#ifndef __MINGW32__
   double process_time ();       // since solver was initialized
+#endif // __MINGW32__
   double real_time ();          // since solver was initialized
 
   double time () {
+#ifndef __MINGW32__
     return opts.realtime ? real_time () : process_time ();
+#else // __MINGW32__
+    return real_time ();
+#endif // __MINGW32__
   }
 
   // Regularly reports what is going on in 'report.cpp'.

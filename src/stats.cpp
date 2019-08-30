@@ -9,7 +9,9 @@ namespace CaDiCaL {
 Stats::Stats () {
   memset (this, 0, sizeof *this);
   time.real = absolute_real_time ();
+#ifndef __MINGW32__
   time.process = absolute_process_time ();
+#endif // __MINGW32__
   walk.minimum = LONG_MAX;
 }
 
