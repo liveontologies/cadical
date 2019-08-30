@@ -104,8 +104,13 @@ Report::Report (const char * h, int precision, int min, double value)
 #define TIME \
   opts.reportsolve ? solve_time () : time ()
 
-#define MB \
+#ifndef __MINGW32__
+# define MB \
   (current_resident_set_size () / (double)(1l<<20))
+# define MB_REPORT REPORT("MB", 0, 2, MB)
+#else // __MINGW32__
+# define MB_REPORT
+#endif // __MINGW32__
 
 #define REMAINING \
   (percent (active (), external->max_var))
@@ -122,7 +127,7 @@ Report::Report (const char * h, int precision, int min, double value)
 #define REPORTS \
 /*     HEADER, PRECISION, MIN, VALUE */ \
 REPORT("seconds",      2, 5, TIME) \
-REPORT("MB",           0, 2, MB) \
+MB_REPORT \
 REPORT("level",        0, 2, averages.current.level) \
 REPORT("reductions",   0, 1, stats.reductions) \
 REPORT("restarts",     0, 3, stats.restarts) \

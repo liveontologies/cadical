@@ -250,10 +250,16 @@ void Stats::print (Internal * internal) {
 
   SECTION ("resources");
 
+#ifndef __MINGW32__
   size_t m = maximum_resident_set_size ();
   PRT ("total process time since initialization: %12.2f    seconds", internal->process_time ());
+#endif //__MINGW32__
+
   PRT ("total real time since initialization:    %12.2f    seconds", internal->real_time ());
+
+#ifndef __MINGW32__
   PRT ("maximum resident set size of process:    %12.2f    MB", m/(double)(1l<<20));
+#endif // __MINGW32__
 
 #endif // ifndef QUIET
 
