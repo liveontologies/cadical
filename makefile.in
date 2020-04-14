@@ -43,10 +43,10 @@ all: libcadical.a cadical mobical
 # tester 'mobical') and the library are the main build targets.
 
 cadical: cadical.o signal.o libcadical.a makefile
-	$(COMPILE) -o $@ $< -L. -lcadical
+	$(COMPILE) -o $@ $(filter %.o,$^) -L. -lcadical
 
 mobical: mobical.o signal.o libcadical.a makefile
-	$(COMPILE) -o $@ $< -L. -lcadical
+	$(COMPILE) -o $@ $(filter %.o,$^) -L. -lcadical
 
 libcadical.a: $(OBJ) makefile
 	ar rc $@ $(OBJ)
