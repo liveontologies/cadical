@@ -9,6 +9,7 @@
 
 CXX=@CXX@
 CXXFLAGS=@CXXFLAGS@
+AR=@AR@
 
 # Mainly used for parallel build ('-j' option to 'configure')
 
@@ -49,7 +50,7 @@ mobical: mobical.o signal.o libcadical.a makefile
 	$(COMPILE) -o $@ $(filter %.o,$^) -L. -lcadical
 
 libcadical.a: $(OBJ) makefile
-	ar rc $@ $(OBJ)
+	$(AR) rc $@ $(OBJ)
 
 #--------------------------------------------------------------------------#
 

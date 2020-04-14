@@ -154,6 +154,14 @@ do
       CXXFLAGS="`expr \"$1\" : 'CXXFLAGS=\(.*\)'`"
       ;;
 
+    AR=*)
+      AR="`expr \"$1\" : 'AR=\(.*\)'`"
+      ;;
+
+    SKIP_EXEC=*)
+      SKIP_EXEC="`expr \"$1\" : 'SKIP_EXEC=\(.*\)'`"
+      ;;
+
     *) die "invalid option '$1' (try '-h')";;
 
   esac
@@ -229,6 +237,7 @@ msg "root directory '$root'"
 
 [ x"$CXX" = x ] && CXX=g++
 [ x"$CXXFLAGS" = x ] || CXXFLAGS="$CXXFLAGS "
+[ x"$AR" = x ] && AR=ar
 
 case x"$CXX" in
   xg++*|xclang++*) CXXFLAGS="${CXXFLAGS}-Wall -Wextra";;
@@ -280,7 +289,10 @@ int main () { std::cout << "hello world" << std::endl; }
 EOF
 if $CXX $CXXFLAGS $WERROR -o $feature.exe $feature.cpp 2>>configure.log
 then
-  if [ ! "`$feature.exe 2>>configure.log`" = "hello world" ]
+  if [ ! x"$SKIP_EXEC" = x ]    
+  then
+    msg "skip execution of '$feature.exe'"
+  elif [ ! "`$feature.exe 2>>configure.log`" = "hello world" ]
   then
     die "execution of '$feature.exe' failed"
   fi
@@ -323,7 +335,10 @@ int main () { MACRO ("%d", 42); return 0; }
 EOF
 if $CXX $CXXFLAGS $WERROR -o $feature.exe $feature.cpp 2>>configure.log
 then
-  if [ "`$feature.exe 2>>configure.log`" = 42 ]
+  if [ ! x"$SKIP_EXEC" = x ]    
+  then
+    msg "skip execution of '$feature.exe'"
+  elif [ "`$feature.exe 2>>configure.log`" = 42 ]
   then
     msg "compiler supports all required C99/C++0x extensions"
   else
@@ -333,7 +348,10 @@ else
   CXXFLAGS="$CXXFLAGS -std=c++0x"
   if $CXX $CXXFLAGS -o $feature.exe $feature.cpp 2>>configure.log
   then
-    if [ "`$feature.exe 2>>configure.log`" = 42 ]
+    if [ ! x"$SKIP_EXEC" = x ]    
+    then
+      msg "skip execution of '$feature.exe'"
+    elif [ "`$feature.exe 2>>configure.log`" = 42 ]
     then
       msg "using '-std=c++0x' for all required C99/C++0x extensions"
     else
@@ -366,9 +384,12 @@ int main () {
   return 0;
 }
 EOF
-  if $CXX $CXXFLAGS -o $feature.exe $feature.cpp 2>>configure.log
+  if $CXX $CXXFLAGS -o $feature.exe $feature.cpp 2>>configure.log && [ ! x"$EXEC" = x ]
   then
-    if $feature.exe
+    if [ ! x"$SKIP_EXEC" = x ]    
+    then
+      msg "skip execution of '$feature.exe'"
+    elif $feature.exe
     then
       msg "unlocked IO with '{putc,getc}_unlocked' seems to work"
     else
@@ -397,6 +418,7 @@ sed \
 # This 'makefile' is generated from '../makefile.in'." \
 -e "s,@CXX@,$CXX," \
 -e "s,@CXXFLAGS@,$CXXFLAGS," \
+-e "s,@AR@,$AR," \
 -e "s,@MAKEFLAGS@,$MAKEFLAGS," \
 ../makefile.in > makefile
 
